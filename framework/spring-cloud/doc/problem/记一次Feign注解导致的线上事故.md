@@ -56,7 +56,7 @@ public class SpringContext {
 * 首先通过错误堆栈可以推断出在接收到上下文刷新事件时`SpringContext`并没有被初始化，此时其持有的context为空，导致调用报NPE。
 * 通过代码比对发现跟上次正常的版本的区别只是新加入了`@EnableFeignClients(basePackages = "xx.xx")`，所以很大原因是这个引起的。于是对两个版本的代码debug发现接收到的刷新事件的源是不一样的。没加Feign注解之前的源是`AnnotationConfigEmbeddedWebApplicationContext`，而加了注解之后变成了`AnnotationConfigApplicationContext`，同时发现这两个context初始化的单例bean是不一样的，后面的只是初始化了Feign相关的bean。至此我们应该是找到确切的原因了。
 * 那为什么会出现这种问题呢？
-原来是，当加入Feign client到上下文之后，spring cloud会创建一个子的上下文来初始化Feign相关的实例，初始化完成之后会发送上下文刷新事件，而此时父上下文并没有初始化完成。 （参考[https://github.com/springfox/springfox/issues/1207](link)）
+原来是，当加入Feign client到上下文之后，spring cloud会创建一个子的上下文来初始化Feign相关的实例，初始化完成之后会发送上下文刷新事件，而此时父上下文并没有初始化完成。 （参考[https://github.com/springfox/springfox/issues/1207](https://github.com/springfox/springfox/issues/1207)）
 
 
 ### 问题解决
