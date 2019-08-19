@@ -62,13 +62,4 @@ public class SpringContext {
 ### 问题解决
 * 方案一：修改监听的事件类型为`ApplicationReadyEvent`，确保应用上下文全部加载完毕。
 * 方案二：在`LazyServiceImpl`上添加`@DependsOn('springContext')`，让其依赖于`SpringContext`实例（其通过静态方法调用`SpringContext`并不会触发它的加载动作）的初始化。
-* 方案三：仍然监听`ContextRefreshEvent`，不过只监听父上下文刷新事件。
-```java
-if(contextRefreshedEvent.getApplicationContext().getRoot() != null) {
-    // Not the root context. So skip this event.
-} else {
-    if (initialized.compareAndSet(false, true)) {
-        // proceed with processing.
-    }
-}
-```
+
